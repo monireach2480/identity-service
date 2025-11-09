@@ -1,0 +1,199 @@
+{
+  "info": {
+    "name": "Identity Service API",
+    "description": "Epic 1: Digital Identity Setup and Restore",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"user@example.com\",\n  \"channel\": \"email\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "v1", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"user@example.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/verify-otp",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "v1", "auth", "verify-otp"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Identity",
+      "item": [
+        {
+          "name": "Check Identity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/identity/check",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "v1", "identity", "check"]
+            }
+          }
+        },
+        {
+          "name": "Register DID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"did\": \"did:key:z6MkexampleDID123\",\n  \"publicKey\": \"base58encodedPublicKey\",\n  \"deviceId\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/identity/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "v1", "identity", "register"]
+            }
+          }
+        },
+        {
+          "name": "Create Backup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"did\": \"did:key:z6MkexampleDID123\",\n  \"passphrase\": \"mySecurePassphrase\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/identity/backup",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "v1", "identity", "backup"]
+            }
+          }
+        },
+        {
+          "name": "Restore Identity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"encryptedFile\": \"base64EncodedEncryptedData\",\n  \"passphrase\": \"mySecurePassphrase\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/identity/restore",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "v1", "identity", "restore"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sync",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/sync/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "v1", "sync", "health"]
+            }
+          }
+        },
+        {
+          "name": "Batch Sync",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operations\": [\n    {\n      \"operation\": \"create\",\n      \"data\": {\n        \"did\": \"did:key:z6MknewDID\",\n        \"publicKey\": \"newPublicKey\"\n      },\n      \"timestamp\": 1699344000000\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/sync/batch",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "v1", "sync", "batch"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

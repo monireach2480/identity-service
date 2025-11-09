@@ -25,20 +25,41 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints - Complete registration flow
+                        // Documentation & Health - Always public
                         .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                "/actuator/health",
                                 "/api/v1/health",
-                                "/api/v1/auth/**",           // OTP generation and verification
-                                "/api/v1/identity/**",       // Identity operations (register, backup, etc.)
-                                "/api/v1/sync/health",       // Sync status check
-                                "/api/v1/sync/batch",        // Sync operations
-                                "/actuator/health",          // Spring Boot health
-                                "/swagger-ui/**",            // API documentation
-                                "/v3/api-docs/**"            // OpenAPI specs
+                                "/api/v1/sync/health"
                         ).permitAll()
-                        // Future: Add protected endpoints here when needed
+
+                        // Public endpoints - Registration & Restore flow
+                        .requestMatchers(
+                                "/api/v1/auth/register",      // OTP generation
+                                "/api/v1/auth/verify-otp",    // OTP verification
+                                "/api/v1/auth/resend-otp",    // Resend OTP
+                                "/api/v1/identity/check",     // Check if identity exists
+                                "/api/v1/identity/restore"    // Restore identity from backup
+                        ).permitAll()
+
+                        // Protected endpoints - Require authentication after OTP verification
+                        .requestMatchers(
+                                "/api/v1/identity/register",   // Register DID (after OTP)
+                                "/api/v1/identity/backup",     // Create backup
+                                "/api/v1/sync/batch"           // Sync operations
+                        ).authenticated()  // ← PRODUCTION: Requires JWT token
+
+                        // Everything else requires authentication
                         .anyRequest().authenticated()
                 );
+
+        // TODO: Enable Keycloak JWT validation for production
+        // Uncomment the line below when Keycloak is configured:
+        // .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
         return http.build();
     }

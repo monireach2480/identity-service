@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: identity-postgres
+    environment:
+      POSTGRES_DB: identity_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5430:5432"  #
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - identity-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: identity-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - identity-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.0
+    container_name: identity-keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak  # ✅ CHANGE TO 5432
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+    command: start-dev
+    ports:
+      - "8080:8080"  # ✅
+    depends_on:
+      - postgres
+    networks:
+      - identity-network
+
+volumes:
+  postgres_data:
+
+networks:
+  identity-network:
+    driver: bridge
