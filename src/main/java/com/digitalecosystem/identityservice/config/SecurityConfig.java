@@ -37,21 +37,23 @@ public class SecurityConfig {
                                 "/api/v1/sync/health"
                         ).permitAll()
 
-                        // Public endpoints - Registration & Restore flow
+                        // Public endpoints - Complete registration flow
                         .requestMatchers(
                                 "/api/v1/auth/register",      // OTP generation
                                 "/api/v1/auth/verify-otp",    // OTP verification
                                 "/api/v1/auth/resend-otp",    // Resend OTP
                                 "/api/v1/identity/check",     // Check if identity exists
-                                "/api/v1/identity/restore"    // Restore identity from backup
+                                "/api/v1/identity/register",  // Register DID (FIXED: now public)
+                                "/api/v1/identity/restore",   // Restore identity from backup
+                                "/api/v1/identity/test-link",
+                                "/api/v1/trust-token/setup"   // Trust token setup (FIXED: now public)
                         ).permitAll()
 
-                        // Protected endpoints - Require authentication after OTP verification
+                        // Protected endpoints - Require authentication after registration
                         .requestMatchers(
-                                "/api/v1/identity/register",   // Register DID (after OTP)
                                 "/api/v1/identity/backup",     // Create backup
                                 "/api/v1/sync/batch"           // Sync operations
-                        ).authenticated()  // ← PRODUCTION: Requires JWT token
+                        ).authenticated()
 
                         // Everything else requires authentication
                         .anyRequest().authenticated()

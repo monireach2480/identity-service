@@ -44,6 +44,11 @@ public class UserContact {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "identifier_hash", length = 64)
+    private String identifierHash;
+
+
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

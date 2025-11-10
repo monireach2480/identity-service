@@ -10,4 +10,6 @@ public interface UserContactRepository extends JpaRepository<UserContact, Long> 
     Optional<UserContact> findByEmail(String email);
     Optional<UserContact> findByPhoneNumber(String phoneNumber);
     Optional<UserContact> findByEmailOrPhoneNumber(String email, String phoneNumber);
+    Optional<UserContact> findByIdentifierHash(String identifierHash);
+
 }

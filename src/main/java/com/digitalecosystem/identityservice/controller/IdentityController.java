@@ -1,13 +1,17 @@
 package com.digitalecosystem.identityservice.controller;
 
 import com.digitalecosystem.identityservice.dto.*;
+import com.digitalecosystem.identityservice.exception.IdentityException;
 import com.digitalecosystem.identityservice.service.BackupService;
 import com.digitalecosystem.identityservice.service.IdentityService;
+import com.digitalecosystem.identityservice.service.OTPService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/identity")
@@ -17,6 +21,7 @@ public class IdentityController {
 
     private final IdentityService identityService;
     private final BackupService backupService;
+    private final OTPService otpService;
 
     /**
      * Check if identity exists
@@ -31,14 +36,28 @@ public class IdentityController {
     }
 
     /**
-     * Register DID
+     * Register DID with verified identifier linking
      * POST /api/v1/identity/register
      */
     @PostMapping("/register")
     public ResponseEntity<DIDCreateResponse> registerDID(@Valid @RequestBody DIDCreateRequest request) {
         log.info("DID registration request: {}", request.getDid());
 
+        // Check if identifier was verified via OTP
+        if (request.getVerifiedIdentifier() != null && !otpService.isIdentifierVerified(request.getVerifiedIdentifier())) {
+            throw new IdentityException("Identifier not verified. Please complete OTP verification first.");
+        }
+
         DIDCreateResponse response = identityService.createDID(request);
+
+        // Link contact if identifier was provided and verified
+        if (request.getVerifiedIdentifier() != null && otpService.isIdentifierVerified(request.getVerifiedIdentifier())) {
+            boolean isEmail = request.getVerifiedIdentifier().contains("@");
+            identityService.linkContact(request.getDid(), request.getVerifiedIdentifier(), isEmail);
+            otpService.invalidateVerifiedIdentifier(request.getVerifiedIdentifier()); // Clean up
+            log.info("Auto-linked verified identifier: {} to DID: {}", request.getVerifiedIdentifier(), request.getDid());
+        }
+
         return ResponseEntity.ok(response);
     }
 
@@ -64,5 +83,26 @@ public class IdentityController {
 
         RestoreIdentityResponse response = backupService.restoreIdentity(request);
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Test endpoint to manually link contact (for testing)
+     * POST /api/v1/identity/test-link
+     */
+    @PostMapping("/test-link")
+    public ResponseEntity<Map<String, Object>> testLinkContact(@RequestBody Map<String, String> request) {
+        String did = request.get("did");
+        String identifier = request.get("identifier");
+
+        log.info("Manual contact link test: {} -> {}", identifier, did);
+
+        boolean isEmail = identifier.contains("@");
+        identityService.linkContact(did, identifier, isEmail);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Contact linked successfully",
+                "did", did,
+                "identifier", identifier
+        ));
     }
 }

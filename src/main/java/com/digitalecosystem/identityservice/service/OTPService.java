@@ -28,6 +28,7 @@ public class OTPService {
 
     private static final String OTP_PREFIX = "otp:";
     private static final String ATTEMPT_PREFIX = "otp_attempt:";
+    private static final String VERIFIED_PREFIX = "verified:";
 
     /**
      * Generate and send OTP
@@ -90,6 +91,32 @@ public class OTPService {
         }
 
         return isValid;
+    }
+
+    /**
+     * Mark identifier as verified after OTP validation
+     */
+    public void markIdentifierAsVerified(String identifier) {
+        String key = VERIFIED_PREFIX + identifier;
+        redisTemplate.opsForValue().set(key, "true", 1800, TimeUnit.SECONDS); // 30 minutes
+        log.info("Identifier marked as verified: {}", identifier);
+    }
+
+    /**
+     * Check if identifier is verified
+     */
+    public boolean isIdentifierVerified(String identifier) {
+        String key = VERIFIED_PREFIX + identifier;
+        return "true".equals(redisTemplate.opsForValue().get(key));
+    }
+
+    /**
+     * Invalidate verified identifier (clean up after use)
+     */
+    public void invalidateVerifiedIdentifier(String identifier) {
+        String key = VERIFIED_PREFIX + identifier;
+        redisTemplate.delete(key);
+        log.info("Verified identifier invalidated: {}", identifier);
     }
 
     /**

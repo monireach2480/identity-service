@@ -61,6 +61,9 @@ public class AuthController {
             throw new OTPException("Invalid or expired OTP");
         }
 
+        // Mark identifier as verified for 30 minutes
+        otpService.markIdentifierAsVerified(request.getIdentifier());
+
         return ResponseEntity.ok(OTPValidateResponse.builder()
                 .status("VALID")
                 .message("OTP verified successfully")

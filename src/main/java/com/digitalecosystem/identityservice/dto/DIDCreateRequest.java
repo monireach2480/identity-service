@@ -17,4 +17,7 @@ public class DIDCreateRequest {
     private Boolean offlineCreated = false;
 
     private Long clientTimestamp;
+
+    // ADD THIS: The verified identifier from OTP
+    private String verifiedIdentifier;
 }

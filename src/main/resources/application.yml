@@ -35,11 +35,28 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8080/realms/digital-ecosystem
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: gavibacfort123@gmail@gmail.com  # ← Your Gmail
+      password: evep jwcx riiw cbis  # ← App password from Step 3
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
 
 server:
   port: 8081
 
 app:
+  storage:
+    type: s3
+    endpoint: http://localhost:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket: identity-backups
   otp:
     expiry-seconds: 180
     max-attempts: 3
