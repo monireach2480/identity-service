@@ -5,7 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Entity
 @Table(name = "user_identity")
@@ -45,6 +49,22 @@ public class UserIdentity {
 
     @Column(name = "server_version")
     private Integer serverVersion;
+
+    @Column(name = "public_did")
+    private String publicDid;
+
+    @Column(name = "did_web_path")
+    private String didWebPath;
+
+    @Column(name = "did_web_status")
+    private String didWebStatus;
+
+    @Column(name = "did_web_published_at")
+    private LocalDateTime didWebPublishedAt;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "did_web_metadata")
+    private Map<String, Object> didWebMetadata;
 
     @PrePersist
     protected void onCreate() {

@@ -51,6 +51,14 @@ server:
   port: 8081
 
 app:
+  did:
+    web:
+      enabled: true
+      domain: ${DID_WEB_DOMAIN:localhost}
+      hosting-type: static # or 'dynamic'
+      static-path: /var/www/.well-known
+      # OR for dynamic hosting:
+      # base-url: https://${app.did.web.domain}
   storage:
     type: s3
     endpoint: http://localhost:9000
@@ -73,3 +81,4 @@ logging:
     org.springframework.web: DEBUG
     org.springframework.security: DEBUG
     com.digitalecosystem.identityservice: DEBUG
+

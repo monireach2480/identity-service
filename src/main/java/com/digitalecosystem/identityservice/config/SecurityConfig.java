@@ -48,7 +48,19 @@ public class SecurityConfig {
                                 "/api/v1/identity/test-link",
                                 "/api/v1/trust-token/setup"   // Trust token setup (FIXED: now public)
                         ).permitAll()
+                                // Public endpoints - Add these to your existing permitAll() list
+                        .requestMatchers(
+                                "/api/v1/did/challenge",      // Get proof-of-control challenge
+                                "/api/v1/did/prove-control",  // Verify proof of control
+                                "/api/v1/did/status"          // Check DID status (consider if this should be public)
+                        ).permitAll()
 
+                                // Protected endpoints - Add these to your authenticated() list
+                        .requestMatchers(
+                                "/api/v1/did/publish",        // Publish DID
+                                "/api/v1/did/unpublish"       // Unpublish DID
+                        ).authenticated()
+                        //this one
                         // Protected endpoints - Require authentication after registration
                         .requestMatchers(
                                 "/api/v1/identity/backup",     // Create backup
